@@ -1,0 +1,15 @@
+<div class="container" dir="rtl" style="font-family: 'Cairo'; padding: 20px; text-align: center;">
+    <h1 style="color: #1a73e8;">أقسام {{ grade_name }}</h1>
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 30px;">
+        {% for cat in categories %}
+            <a href="{% url 'category_lessons' cat.id %}" style="text-decoration: none;">
+                <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 200px; border: 2px solid #1a73e8;">
+                    <h3 style="color: #333;">{{ cat.name }}</h3>
+                    {% if not cat.is_free %}<span style="color: red;">🔒 مدفوع</span>{% endif %}
+                </div>
+            </a>
+        {% empty %}
+            <p>لا توجد أقسام مضافة لهذا الصف.</p>
+        {% endfor %}
+    </div>
+</div>

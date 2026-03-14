@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>دروس {{ category.name }} - الإبداع في الرياضيات</title>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        :root { --main-color: #1a73e8; --secondary-color: #34a853; --accent-color: #e67e22; --bg-color: #f0f2f5; }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; padding-bottom: 50px; }
+        .user-bar { background: #fff; padding: 15px 5%; border-bottom: 4px solid var(--main-color); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .alert { padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center; font-weight: bold; border: 2px solid; }
+        .alert-success { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .lesson-card { background: white; padding: 25px; border-radius: 18px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); margin: 20px 0; border: 1px solid #eee; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; margin: 20px 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .btn-group { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
+        .pdf-btn { background: var(--secondary-color); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; }
+        .quiz-btn { background: var(--accent-color); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; }
+        .locked-card { background: linear-gradient(135deg, #fff9e6 0%, #fff 100%); padding: 40px; text-align: center; border-radius: 25px; border: 2px dashed #ffeeba; }
+        .fb-btn { background: #1877f2; color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; margin: 15px 0; }
+        .activation-input { padding: 12px; width: 200px; border: 2px solid #ddd; border-radius: 10px; text-align: center; font-weight: bold; }
+        .activation-submit { background: var(--main-color); color: white; border: none; padding: 13px 30px; border-radius: 10px; cursor: pointer; font-weight: bold; font-family: 'Cairo'; margin-right:10px; }
+    </style>
+</head>
+<body>
+
+<div class="user-bar">
+    <div style="text-align: right;">
+        <div style="font-size: 1.8rem; font-weight: 900; color: var(--main-color);">✨ الإبداع <span style="color: var(--secondary-color);">في الرياضيات</span></div>
+        <div style="font-size: 0.9rem; font-weight: bold; color: #555;">قسم: {{ category.name }} | {{ category.get_grade_display }}</div>
+    </div>
+    <div style="display: flex; gap: 15px; align-items: center;">
+        <a href="{% url 'profile' %}" style="color: var(--main-color); font-weight: bold;">👤 ملفي الشخصي</a>
+        <a href="{% url 'home' %}" style="color: #666; font-weight: bold;">🏠 الرئيسية</a>
+    </div>
+</div>
+
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}error{% else %}{{ message.tags }}{% endif %}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <h1 style="text-align:center; color: var(--main-color); margin-bottom: 30px;">شروحات قسم {{ category.name }}</h1>
+
+    {% if is_allowed %}
+        {# 1. إذا كان مسموحاً له بالدخول: اعرض الدروس #}
+        {% for lesson in lessons %}
+            <div class="lesson-card">
+                <h3 style="margin-top: 0; color: #2c3e50;">{{ lesson.title }}</h3>
+                {% if lesson.video_url %}
+                    <div class="video-container">
+                        <iframe src="{{ lesson.video_url }}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                {% endif %}
+                <div class="btn-group">
+                    {% if lesson.pdf_file %}
+                        <a href="{{ lesson.pdf_file.url }}" class="pdf-btn" target="_blank">📥 تحميل المذكرة (PDF)</a>
+                    {% endif %}
+                    {% if lesson.quiz %}
+                        <a href="{% url 'take_quiz' lesson.quiz.id %}" class="quiz-btn">📝 اختبار الدرس</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <div style="text-align: center; padding: 50px; color: #888; background: white; border-radius: 15px;">
+                <h3>قريباً.. سيتم رفع دروس هذا القسم ⏳</h3>
+            </div>
+        {% endfor %}
+
+    {% else %}
+        {# 2. إذا كان القسم مغلقاً: اعرض رسالة القفل والتفعيل #}
+        <div class="locked-card">
+            <h2 style="color: #856404;">🔒 هذا المحتوى مدفوع</h2>
+            <p style="font-size: 1.2rem;">لمشاهدة دروس <strong>{{ category.name }}</strong>، يرجى تفعيل الاشتراك.</p>
+            <p style="font-size: 1.5rem; font-weight: 900; color: var(--main-color);">السعر: {{ category.price }} ج.م</p>
+            
+            <div style="background: white; padding: 20px; border-radius: 15px; margin: 25px 0; box-shadow: 0 5px 15px rgba(0,0,0,0.05);">
+                <p style="font-weight: bold; color: #555;">للحصول على كود التفعيل، تواصل معنا:</p>
+                <p style="font-size: 1.3rem; color: var(--secondary-color);">📞 واتساب: <strong>01009690912</strong></p>
+                <a href="https://www.facebook.com/mstrrmdan.abrahym.2025" target="_blank" class="fb-btn">🔵 مراسلة مستر رمضان على فيسبوك</a>
+            </div>
+
+            <div style="margin-top: 30px; padding-top: 25px; border-top: 2px solid #eee;">
+                <p style="font-weight: bold; color: #333; margin-bottom: 15px;">أدخل كود التفعيل هنا:</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="text" name="activation_code" placeholder="اكتب الكود هنا" required class="activation-input">
+                    <button type="submit" class="activation-submit">تفعيل الآن</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 50px;">
+        <a href="{% url 'grade_categories' category.grade %}" style="text-decoration: none; color: #1a73e8; font-weight: bold;">← العودة لقائمة الأقسام</a>
+    </div>
+</div>
+
+</body>
+</html>

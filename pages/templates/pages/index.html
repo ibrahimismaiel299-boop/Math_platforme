@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>الإبداع في الرياضيات - مستر رمضان إبراهيم</title>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        :root { --main-color: #1a73e8; --secondary-color: #34a853; --accent-color: #e67e22; --bg-color: #fff; }
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; text-align: center; }
+        
+        .user-bar { 
+            background: #fff; padding: 15px 5%; border-bottom: 4px solid var(--main-color); 
+            display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .container { margin-top: 50px; padding: 0 5%; }
+        .grades { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-top: 40px; padding-bottom: 50px; }
+        .card { 
+            background: #2507; padding: 40px 20px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
+            cursor: pointer; transition: 0.4s; border: 2px solid transparent; 
+        }
+        .card:hover { transform: translateY(-10px); border-color: var(--main-color); box-shadow: 0 15px 30px rgba(26,115,232,0.1); }
+        .card h3 { color: #2c3e50; margin: 0; font-size: 1.5rem; }
+        
+        a { text-decoration: none; color: inherit; }
+        .logout-btn { background: #fee2e2; color: #dc2626; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-family: 'Cairo'; }
+    </style>
+</head>
+<body>
+
+<div class="user-bar">
+    <div style="text-align: right;">
+        <div style="font-size: 1.8rem; font-weight: 900; color: var(--main-color); line-height: 1.1;">✨ الإبداع <span style="color: var(--secondary-color);">في الرياضيات</span></div>
+        <div style="font-size: 1rem; font-weight: bold; color: #555; margin-top: 5px;">مستر رمضان إبراهيم | <span style="color: var(--accent-color);">إعدادي - ثانوي</span></div>
+        <div style="font-size: 0.9rem; color: #888; font-weight: bold;">📞 01009690912</div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 15px;">
+        {% if user.is_authenticated %}
+            <div style="text-align: left;">
+                <span style="display: block; font-size: 0.8rem; color: #666;">مرحباً بك،</span>
+                <a href="{% url 'profile' %}" style="color: var(--main-color); font-weight: bold;">👤 {{ user.username }}</a>
+            </div>
+            {% if user.is_superuser %}
+                <a href="/admin/" style="color: var(--secondary-color); font-weight: bold; border: 2px solid var(--secondary-color); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem;">⚙️ الإدارة</a>
+            {% endif %}
+            <form action="{% url 'logout' %}" method="post" style="margin: 0;">{% csrf_token %}<button type="submit" class="logout-btn">خروج</button></form>
+        {% else %}
+            <a href="{% url 'login' %}" style="color: var(--main-color); font-weight: bold; border: 2px solid var(--main-color); padding: 8px 20px; border-radius: 10px;">تسجيل دخول</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    <h1 style="color: #2c3e50; font-size: 2.5rem;">ابتدأ رحلة التفوق الآن 🚀</h1>
+    <p style="color: #666; font-size: 1.2rem;">اختر صفك الدراسي للوصول إلى أقوى الشروحات والاختبارات</p>
+    
+    <div class="grades">
+        <a href="{% url 'grade_categories' '1G' %}"><div class="card"><h3>الأول الإعدادي</h3></div></a>
+        <a href="{% url 'grade_categories' '2G' %}"><div class="card"><h3>الثاني الإعدادي</h3></div></a>
+        <a href="{% url 'grade_categories' '3G' %}"><div class="card"><h3>الثالث الإعدادي</h3></div></a>
+        <a href="{% url 'grade_categories' '1S' %}"><div class="card"><h3>الأول الثانوي</h3></div></a>
+        <a href="{% url 'grade_categories' '2S' %}"><div class="card"><h3>الثاني الثانوي</h3></div></a>
+        <a href="{% url 'grade_categories' '3S' %}"><div class="card"><h3>الثالث الثانوي</h3></div></a>
+    </div>
+</div>
+
+</body>
+</html>

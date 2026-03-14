@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إنشاء حساب طالب جديد</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 400px; text-align: center; border: 1px solid #ddd; }
+        h2 { color: #1a73e8; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #1a73e8; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 15px; font-weight: bold; }
+        button:hover { background-color: #1557b0; }
+        .helptext { font-size: 0.8rem; color: #666; text-align: right; display: block; margin-bottom: 10px; }
+        ul { list-style: none; padding: 0; text-align: right; font-size: 0.8rem; color: #d93025; }
+        a { color: #1a73e8; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>إنشاء حساب طالب</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div style="text-align: right; margin-bottom: 15px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="helptext">{{ field.help_text|safe }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <ul><li>{{ error }}</li></ul>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit">إنشاء الحساب والبدء</button>
+        </form>
+        <p style="margin-top:20px;">لديك حساب بالفعل؟ <a href="{% url 'login' %}">دخول</a></p>
+    </div>
+</body>
+</html>
