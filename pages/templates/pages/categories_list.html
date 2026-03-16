@@ -1,15 +1,100 @@
-<div class="container" dir="rtl" style="font-family: 'Cairo'; padding: 20px; text-align: center;">
-    <h1 style="color: #1a73e8;">أقسام {{ grade_name }}</h1>
-    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 30px;">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>أقسام {{ grade_name }} - الإبداع في الرياضيات</title>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        :root { --main-color: #1a73e8; --secondary-color: #34a853; --bg-color: #f0f2f5; }
+        
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; padding-bottom: 50px; transition: 0.3s; }
+        
+        /* ألوان الوضع الليلي */
+        body.dark-mode { background-color: #1a202c !important; color: #e2e8f0 !important; }
+        .dark-mode .user-bar, .dark-mode .cat-card { 
+            background-color: #2d3748 !important; color: #ffffff !important; border-color: #4a5568 !important; 
+        }
+        .dark-mode h1, .dark-mode h3, .dark-mode p { color: #edf2f7 !important; }
+
+        .user-bar { background: #fff; padding: 15px 5%; border-bottom: 4px solid var(--main-color); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
+        
+        .nav-links { display: flex; gap: 15px; align-items: center; }
+        .dark-mode-btn { cursor: pointer; padding: 5px 15px; border-radius: 20px; border: 2px solid var(--main-color); background: transparent; font-weight: bold; font-family: 'Cairo'; transition: 0.3s; color: var(--main-color); }
+        .dark-mode .dark-mode-btn { color: #fff; border-color: #fff; }
+
+        .container { max-width: 900px; margin: 40px auto; padding: 20px; text-align: center; }
+        
+        /* تنسيق كروت الأقسام */
+        .cat-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 30px; }
+        .cat-card { 
+            background: white; padding: 30px; border-radius: 15px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 220px; 
+            border: 2px solid var(--main-color); cursor: pointer; transition: 0.3s;
+        }
+        .cat-card:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(26, 115, 232, 0.2); }
+
+        .btn-back { display: inline-block; margin-top: 40px; color: #666; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body id="pageBody">
+
+<div class="user-bar">
+    <div style="text-align: right;">
+        <div style="font-size: 1.6rem; font-weight: 900; color: var(--main-color);">
+            ✨ الإبداع <span style="color: var(--secondary-color);">في الرياضيات</span>
+        </div>
+        <div style="font-size: 0.9rem; color: #666; font-weight: bold;">مستر رمضان إبراهيم | {{ grade_name }}</div>
+    </div>
+    
+    <div class="nav-links">
+        <button onclick="toggleDarkMode()" id="darkModeBtn" class="dark-mode-btn">🌙 الوضع الليلي</button>
+        <a href="{% url 'home' %}" style="color: #666; font-weight: bold; text-decoration: none;">🏠 الرئيسية</a>
+    </div>
+</div>
+
+<div class="container">
+    <h1 style="color: var(--main-color);">أقسام {{ grade_name }}</h1>
+    
+    <div class="cat-grid">
         {% for cat in categories %}
-            <a href="{% url 'category_lessons' cat.id %}" style="text-decoration: none;">
-                <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 200px; border: 2px solid #1a73e8;">
-                    <h3 style="color: #333;">{{ cat.name }}</h3>
-                    {% if not cat.is_free %}<span style="color: red;">🔒 مدفوع</span>{% endif %}
+            <a href="{% url 'category_lessons' cat.id %}" style="text-decoration: none; color: inherit;">
+                <div class="cat-card">
+                    <h3 style="margin-top: 0;">📚 {{ cat.name }}</h3>
+                    {% if not cat.is_free %}
+                        <span style="color: #d93025; font-weight: bold;">🔒 قسم مدفوع</span>
+                    {% else %}
+                        <span style="color: #28a745; font-weight: bold;">✅ قسم مجاني</span>
+                    {% endif %}
                 </div>
             </a>
         {% empty %}
-            <p>لا توجد أقسام مضافة لهذا الصف.</p>
+            <p style="color: #999;">لا توجد أقسام مضافة حالياً.</p>
         {% endfor %}
     </div>
+
+    <a href="{% url 'home' %}" class="btn-back">← العودة لقائمة الصفوف</a>
 </div>
+
+<script>
+    function toggleDarkMode() {
+        const body = document.getElementById('pageBody');
+        const btn = document.getElementById('darkModeBtn');
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            btn.innerHTML = "☀️ الوضع النهاري";
+        } else {
+            localStorage.setItem('theme', 'light');
+            btn.innerHTML = "🌙 الوضع الليلي";
+        }
+    }
+
+    window.onload = function() {
+        if (localStorage.getItem('theme') === 'dark') {
+            document.getElementById('pageBody').classList.add('dark-mode');
+            document.getElementById('darkModeBtn').innerHTML = "☀️ الوضع النهاري";
+        }
+    }
+</script>
+</body>
+</html>

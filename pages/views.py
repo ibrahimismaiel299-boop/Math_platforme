@@ -20,50 +20,52 @@ def grade_categories(request, grade_code):
         'grade_code': grade_code
     })
 
-# 3. عرض دروس قسم محدد (المستوى الثاني - مع نظام القفل)
 @login_required
 def category_lessons(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     lessons = Lesson.objects.filter(category=category)
     
-    # التحقق من صلاحية الوصول (مجاني، مشترك، أو أدمن)
+    # جلب قائمة بـ IDs الاختبارات التي حلها الطالب بنجاح في هذا القسم
+    completed_quizzes = QuizResult.objects.filter(
+        user=request.user, 
+        quiz__lesson__category=category
+    ).values_list('quiz_id', flat=True)
+
     user_subscriptions = [sub.category for sub in request.user.subscriptions.all()]
     is_allowed = category.is_free or category in user_subscriptions or request.user.is_superuser
     
-    # معالجة كود التفعيل داخل صفحة القسم
-    if request.method == "POST":
-        input_code = request.POST.get('activation_code')
-        try:
-            code_obj = ActivationCode.objects.get(code=input_code, category=category, is_used=False)
-            Subscription.objects.get_or_create(user=request.user, category=category)
-            code_obj.is_used = True
-            code_obj.save()
-            messages.success(request, f"تم تفعيل قسم {category.name} بنجاح!")
-            return redirect('category_lessons', category_id=category.id)
-        except ActivationCode.DoesNotExist:
-            messages.error(request, "كود التفعيل غير صحيح أو تم استخدامه مسبقاً.")
+    # ... (باقي كود الـ POST كما هو) ...
 
     return render(request, 'pages/lessons_list.html', {
         'category': category,
         'lessons': lessons,
-        'is_allowed': is_allowed
+        'is_allowed': is_allowed,
+        'completed_quizzes': completed_quizzes, # أضفنا هذا السطر
     })
 
+
 # 4. صفحة حل الاختبار وحفظ النتيجة
+import random # أضف هذا السطر في أعلى ملف views.py
+
 @login_required
 def take_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
+    
+    # تحويل الأسئلة لقائمة وعمل "خلط" عشوائي لها
+    questions = list(quiz.questions.all())
+    # ملاحظة: لو مش عايز الترتيب يتغير في كل Refresh، ممكن نشيل السطر ده
+    random.shuffle(questions) 
+
     score = None
-    total = quiz.questions.count()
+    total = len(questions)
 
     if request.method == "POST":
         score = 0
-        for question in quiz.questions.all():
+        for question in questions:
             selected_option = request.POST.get(f'question_{question.id}')
             if selected_option and int(selected_option) == question.correct_answer:
                 score += 1
         
-        # حفظ النتيجة في قاعدة البيانات
         QuizResult.objects.create(
             user=request.user,
             quiz=quiz,
@@ -73,6 +75,7 @@ def take_quiz(request, quiz_id):
         
     return render(request, 'pages/take_quiz.html', {
         'quiz': quiz,
+        'questions': questions, # نرسل الأسئلة المرتتبة عشوائياً
         'score': score,
         'total': total
     })

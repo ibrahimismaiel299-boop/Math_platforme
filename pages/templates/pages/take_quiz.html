@@ -1,25 +1,102 @@
-<div dir="rtl" style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px;">
-    <h2 style="color: #1a73e8;">{{ quiz.title }}</h2>
-    <hr>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>اختبار: {{ quiz.title }}</title>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        :root { --main-color: #1a73e8; --bg-color: #f0f2f5; }
+        
+        body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; padding: 20px; transition: 0.3s; }
+        
+        /* ألوان الوضع الليلي */
+        body.dark-mode { background-color: #1a202c !important; color: #e2e8f0 !important; }
+        .dark-mode .quiz-container, .dark-mode .question-card, .dark-mode .option-label { 
+            background-color: #2d3748 !important; color: #ffffff !important; border-color: #4a5568 !important; 
+        }
+        .dark-mode h1, .dark-mode h2, .dark-mode p, .dark-mode .question-text { color: #edf2f7 !important; }
+        .dark-mode .option-label:hover { background-color: #4a5568 !important; border-color: var(--main-color) !important; }
 
+        .quiz-container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        /* تنسيق الهيدر وزر التبديل */
+        .quiz-header { text-align: center; border-bottom: 3px solid var(--main-color); padding-bottom: 15px; margin-bottom: 30px; position: relative; }
+        .dark-mode-btn { cursor: pointer; padding: 5px 15px; border-radius: 20px; border: 2px solid var(--main-color); background: transparent; font-weight: bold; font-family: 'Cairo'; transition: 0.3s; color: var(--main-color); margin-bottom: 10px; }
+        .dark-mode .dark-mode-btn { color: #fff; border-color: #fff; }
+
+        .question-card { background: #f8f9fa; padding: 20px; border-radius: 15px; margin-bottom: 25px; border-right: 6px solid var(--main-color); text-align: right; }
+        .question-text { font-size: 1.2rem; font-weight: bold; color: #2c3e50; margin-bottom: 15px; }
+        .option-label { display: block; background: white; padding: 12px 20px; border-radius: 10px; margin: 8px 0; border: 1px solid #ddd; cursor: pointer; transition: 0.3s; text-align: right; }
+        .option-label:hover { border-color: var(--main-color); background: #eef5ff; }
+        
+        input[type="radio"] { margin-left: 10px; transform: scale(1.2); cursor: pointer; }
+        
+        .submit-btn { display: block; width: 100%; padding: 15px; background: var(--main-color); color: white; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 20px; font-family: 'Cairo'; }
+        .submit-btn:hover { background: #1557b0; transform: translateY(-2px); }
+        
+        .result-card { text-align: center; padding: 40px; }
+        .score { font-size: 3rem; color: #28a745; font-weight: bold; }
+        .back-link { display: inline-block; margin-top: 20px; color: #666; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body id="pageBody">
+
+<div class="quiz-container">
     {% if score is not None %}
-        <div style="background: #d4edda; padding: 20px; border-radius: 10px; text-align: center;">
-            <h3>نتيجتك هي: {{ score }} من {{ total }}</h3>
-            <a href="{% url 'home' %}">العودة للرئيسية</a>
+        <div class="result-card">
+            <h2 style="color: var(--main-color);">انتهى الاختبار! 🎉</h2>
+            <p>درجتك هي:</p>
+            <div class="score">{{ score }} / {{ total }}</div>
+            <p>تم حفظ النتيجة في ملفك الشخصي.</p>
+            <div style="display:flex; justify-content:center; gap:20px;">
+                <button onclick="toggleDarkMode()" id="darkModeBtn" class="dark-mode-btn">🌙 الوضع الليلي</button>
+                <a href="{% url 'home' %}" class="back-link">← العودة للرئيسية</a>
+            </div>
         </div>
     {% else %}
+        <div class="quiz-header">
+            <button onclick="toggleDarkMode()" id="darkModeBtn" class="dark-mode-btn">🌙 الوضع الليلي</button>
+            <h1 style="margin:0; color:var(--main-color);">📝 {{ quiz.title }}</h1>
+            <p style="color:#666;">أجب على الأسئلة ثم اضغط على إنهاء الاختبار</p>
+        </div>
+
         <form method="post">
             {% csrf_token %}
-            {% for q in quiz.questions.all %}
-                <div style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                    <p><strong>{{ forloop.counter }}. {{ q.text }}</strong></p>
-                    <input type="radio" name="question_{{ q.id }}" value="1"> {{ q.option1 }} <br>
-                    <input type="radio" name="question_{{ q.id }}" value="2"> {{ q.option2 }} <br>
-                    <input type="radio" name="question_{{ q.id }}" value="3"> {{ q.option3 }} <br>
-                    <input type="radio" name="question_{{ q.id }}" value="4"> {{ q.option4 }}
+            {% for question in quiz.questions.all %}
+                <div class="question-card">
+                    <div class="question-text">{{ forloop.counter }}. {{ question.text }}</div>
+                    <label class="option-label"><input type="radio" name="question_{{ question.id }}" value="1" required> {{ question.option1 }}</label>
+                    <label class="option-label"><input type="radio" name="question_{{ question.id }}" value="2"> {{ question.option2 }}</label>
+                    <label class="option-label"><input type="radio" name="question_{{ question.id }}" value="3"> {{ question.option3 }}</label>
+                    <label class="option-label"><input type="radio" name="question_{{ question.id }}" value="4"> {{ question.option4 }}</label>
                 </div>
             {% endfor %}
-            <button type="submit" style="background: #1a73e8; color: white; padding: 10px 30px; border: none; border-radius: 5px; cursor: pointer;">إرسال الإجابات</button>
+            <button type="submit" class="submit-btn">إنهاء الاختبار وعرض النتيجة</button>
         </form>
     {% endif %}
 </div>
+
+<script>
+    function toggleDarkMode() {
+        const body = document.getElementById('pageBody');
+        const btn = document.getElementById('darkModeBtn');
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            btn.innerHTML = "☀️ الوضع النهاري";
+        } else {
+            localStorage.setItem('theme', 'light');
+            btn.innerHTML = "🌙 الوضع الليلي";
+        }
+    }
+
+    window.onload = function() {
+        if (localStorage.getItem('theme') === 'dark') {
+            document.getElementById('pageBody').classList.add('dark-mode');
+            document.getElementById('darkModeBtn').innerHTML = "☀️ الوضع النهاري";
+        }
+    }
+</script>
+
+</body>
+</html>
