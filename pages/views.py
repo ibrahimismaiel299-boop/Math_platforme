@@ -1,7 +1,10 @@
+from tokenize import Comment
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Lesson, Quiz, QuizResult, Subscription, Category, ActivationCode
+from .models import Lesson, Quiz, QuizResult, Subscription, Category, ActivationCode, Comment
+
 
 # 1. الصفحة الرئيسية (اختيار الصف الدراسي)
 def home(request):
@@ -23,26 +26,39 @@ def grade_categories(request, grade_code):
 @login_required
 def category_lessons(request, category_id):
     category = get_object_or_404(Category, id=category_id)
-    lessons = Lesson.objects.filter(category=category)
     
-    # جلب قائمة بـ IDs الاختبارات التي حلها الطالب بنجاح في هذا القسم
-    completed_quizzes = QuizResult.objects.filter(
-        user=request.user, 
-        quiz__lesson__category=category
-    ).values_list('quiz_id', flat=True)
+    if request.method == "POST":
+        # --- إضافة تعليق جديد ---
+        if 'comment_text' in request.POST:
+            lesson_id = request.POST.get('lesson_id')
+            lesson = get_object_or_404(Lesson, id=lesson_id)
+            Comment.objects.create(lesson=lesson, user=request.user, text=request.POST.get('comment_text'))
+            messages.success(request, "تم إضافة تعليقك.")
+            
+        # --- حذف تعليق (للأدمن فقط) ---
+        elif 'delete_comment_id' in request.POST and request.user.is_superuser:
+            comment_id = request.POST.get('delete_comment_id')
+            comment = get_object_or_404(Comment, id=comment_id)
+            comment.delete()
+            messages.success(request, "تم حذف التعليق بنجاح.")
+            
+        return redirect('category_lessons', category_id=category.id)
 
+    # باقي الكود الخاص بـ GET كما هو...
+    lessons = Lesson.objects.filter(category=category).order_by('-created_at')
+    # جلب قائمة الاختبارات المحلولة وعملية التفعيل (كما كانت)
+    completed_quizzes = QuizResult.objects.filter(user=request.user).values_list('quiz_id', flat=True)
     user_subscriptions = [sub.category for sub in request.user.subscriptions.all()]
     is_allowed = category.is_free or category in user_subscriptions or request.user.is_superuser
     
-    # ... (باقي كود الـ POST كما هو) ...
+    # ... (كود تفعيل القسم بالكود كما هو) ...
 
     return render(request, 'pages/lessons_list.html', {
         'category': category,
         'lessons': lessons,
         'is_allowed': is_allowed,
-        'completed_quizzes': completed_quizzes, # أضفنا هذا السطر
+        'completed_quizzes': completed_quizzes,
     })
-
 
 # 4. صفحة حل الاختبار وحفظ النتيجة
 import random # أضف هذا السطر في أعلى ملف views.py

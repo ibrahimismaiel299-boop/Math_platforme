@@ -131,5 +131,6 @@ import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-DEBUG = False  # للأمان عند الرفع
-ALLOWED_HOSTS = ['mstrramdan.pythonanywhere.com', '127.0.0.1']
+DEBUG = False
+ALLOWED_HOSTS = ['ibrahimismaiel299.pythonanywhere.com', '127.0.0.1']
+

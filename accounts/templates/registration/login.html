@@ -1,28 +1,88 @@
+{% load crispy_forms_tags %}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تسجيل الدخول - منصة الرياضيات</title>
+    <title>تسجيل الدخول - الإبداع في الرياضيات</title>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; text-align: center; border: 1px solid #ddd; }
-        h2 { color: #1a73e8; margin-bottom: 20px; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #1a73e8; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        button:hover { background-color: #1557b0; }
-        a { color: #1a73e8; text-decoration: none; font-size: 14px; }
-        .errorlist { color: red; list-style: none; padding: 0; font-size: 14px; }
+        :root { --win-blue: #0078d4; --win-bg: #f2f2f2; }
+        
+        body { font-family: 'Cairo', sans-serif; background-color: var(--win-bg); height: 100vh; display: flex; align-items: center; justify-content: center; margin: 0; }
+        
+        /* وضع ليلي */
+        body.dark-mode { background-color: #171717 !important; color: #ffffff !important; }
+        .dark-mode .login-card { background-color: #202020 !important; border: 1px solid #333; }
+        .dark-mode input { background-color: #333 !important; color: #fff !important; border: 1px solid #555 !important; }
+        .dark-mode label { color: #ccc !important; }
+
+        .login-card { 
+            background: white; padding: 40px; width: 100%; max-width: 360px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); border: 1px solid #ddd;
+        }
+        
+        .login-card h2 { color: #333; font-weight: 700; margin-bottom: 25px; text-align: center; }
+        .dark-mode .login-card h2 { color: #fff; }
+
+        /* جعل العناوين (Labels) في المنتصف فوق الخانة */
+        #div_id_username, #div_id_password {
+            text-align: center !important;
+            margin-bottom: 15px;
+        }
+
+        label { 
+            display: block !important; 
+            width: 100% !important; 
+            text-align: center !important; 
+            font-weight: bold;
+            margin-bottom: 8px !important;
+        }
+
+        /* تنسيق الخانات - ويندوز 10 */
+        input { 
+            border-radius: 0 !important; 
+            border: 2px solid #ccc !important; 
+            padding: 10px !important; 
+            text-align: center; /* جعل النص الذي يكتبه المستخدم في المنتصف أيضاً */
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        input:focus { border-color: var(--win-blue) !important; outline: none; }
+
+        .btn-login { 
+            width: 100%; background: var(--win-blue); color: white; border: none; 
+            padding: 12px; font-weight: bold; cursor: pointer; margin-top: 10px; 
+            font-family: 'Cairo'; transition: 0.2s; font-size: 1rem;
+        }
+        .btn-login:hover { background: #005a9e; }
+        
+        .footer-text { margin-top: 25px; font-size: 0.9rem; text-align: center; color: #666; }
+        .dark-mode .footer-text { color: #aaa; }
     </style>
 </head>
-<body>
-    <div class="box">
-        <h2>تسجيل الدخول</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">دخول</button>
-        </form>
-        <p style="margin-top:20px;">ليس لديك حساب؟ <a href="{% url 'signup' %}">سجل حساباً جديداً</a></p>
+<body id="pageBody">
+
+<div class="login-card">
+    <div style="font-size: 1.2rem; font-weight: 700; color: var(--win-blue); margin-bottom: 10px; text-align: center;">الإبداع في الرياضيات</div>
+    <h2>تسجيل الدخول</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn-login">دخول</button>
+    </form>
+    
+    <div class="footer-text">
+        ليس لديك حساب؟ <a href="{% url 'signup' %}" style="color: var(--win-blue); text-decoration: none; font-weight: bold;">إنشاء حساب</a>
     </div>
+</div>
+
+<script>
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-mode');
+    }
+</script>
+
 </body>
 </html>

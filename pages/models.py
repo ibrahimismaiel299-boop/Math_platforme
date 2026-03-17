@@ -127,3 +127,17 @@ class ActivationCode(models.Model):
     class Meta:
         verbose_name = "كود تفعيل"
         verbose_name_plural = "أكواد التفعيل"
+
+class Comment(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField(verbose_name="التعليق")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']  # الأحدث يظهر أولاً
+        verbose_name = "تعليق"
+        verbose_name_plural = "التعليقات"
+
+    def __str__(self):
+        return f"تعليق من {self.user.username} على {self.lesson.title}"

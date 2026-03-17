@@ -3,33 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>دروس {{ category.name }} - الإبداع في الرياضيات</title>
-    <!-- خط Cairo الاحترافي -->
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     <style>
         :root { --main-color: #1a73e8; --secondary-color: #34a853; --accent-color: #e67e22; --bg-color: #f0f2f5; }
-        
         body { font-family: 'Cairo', sans-serif; background-color: var(--bg-color); margin: 0; padding-bottom: 50px; transition: 0.3s; }
         
-        /* ألوان الوضع الليلي */
         body.dark-mode { background-color: #1a202c !important; color: #e2e8f0 !important; }
         .dark-mode .user-bar, .dark-mode .lesson-card, .dark-mode .container, .dark-mode .lesson-header-btn { 
             background-color: #2d3748 !important; color: #ffffff !important; border-color: #4a5568 !important; 
         }
-        .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode p, .dark-mode span { color: #edf2f7 !important; }
+        .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode h5, .dark-mode p, .dark-mode span, .dark-mode strong { color: #edf2f7 !important; }
         .dark-mode .lesson-header-btn { background: #2d3748 !important; }
 
         .user-bar { background: #fff; padding: 15px 5%; border-bottom: 4px solid var(--main-color); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
-        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-        
-        /* أزرار التحكم في الشريط العلوي */
         .nav-links { display: flex; gap: 15px; align-items: center; }
         .dark-mode-btn { cursor: pointer; padding: 5px 15px; border-radius: 20px; border: 2px solid var(--main-color); background: transparent; font-weight: bold; font-family: 'Cairo'; transition: 0.3s; color: var(--main-color); }
-        .dark-mode.dark-mode-btn { color: #fff; border-color: #fff; }
+        .dark-mode .dark-mode-btn { color: #fff; border-color: #fff; }
 
-        .lesson-card { transition: all 0.3s ease; border: 2px solid #edf2f7; border-radius: 12px; overflow: hidden; background: #fff; margin-bottom: 15px; }
-        .lesson-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(26, 115, 232, 0.1); border-color: var(--main-color); }
-
-        .lesson-header-btn { padding: 20px; background: #ffffff; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .lesson-card { transition: 0.3s; border: 2px solid #edf2f7; border-radius: 12px; overflow: hidden; background: #fff; margin-bottom: 15px; }
+        .lesson-header-btn { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
         .lesson-header-btn h4 { margin: 0; color: var(--main-color); font-weight: 700; }
 
         .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; margin: 20px 0; }
@@ -38,13 +31,9 @@
         .btn-group { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px; }
         .pdf-btn { background: var(--secondary-color); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; }
         .quiz-btn { background: var(--accent-color); color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; font-weight: bold; }
-        
-        .alert { padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center; font-weight: bold; border: 2px solid; }
-        .alert-success { background: #d4edda; color: #155724; }
-        .alert-error { background: #f8d7da; color: #721c24; }
     </style>
 </head>
-<body>
+<body id="pageBody">
 
 <div class="user-bar">
     <div style="text-align: right;">
@@ -52,9 +41,7 @@
             ✨ الإبداع <span style="color: var(--secondary-color);">في الرياضيات</span>
             <div style="font-size: 0.8rem; color: #666; font-weight: bold;">مستر رمضان إبراهيم | 📞 01009690912</div>
         </div>
-        <div style="font-size: 0.9rem; font-weight: bold; color: #555; margin-top: 5px;">قسم: {{ category.name }}</div>
     </div>
-    
     <div class="nav-links">
         <button onclick="toggleDarkMode()" id="darkModeBtn" class="dark-mode-btn">🌙 الوضع الليلي</button>
         <a href="{% url 'profile' %}" style="color: var(--main-color); font-weight: bold; text-decoration: none;">👤 ملفي الشخصي</a>
@@ -63,48 +50,85 @@
 </div>
 
 <div class="container">
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{% if message.tags == 'error' %}error{% else %}{{ message.tags }}{% endif %}">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-
     <h1 style="text-align:center; color: var(--main-color); margin-bottom: 30px;">شروحات قسم {{ category.name }}</h1>
 
     {% if is_allowed %}
         {% for lesson in lessons %}
             <div class="lesson-card">
                 <div class="lesson-header-btn" onclick="toggleLesson('lesson-{{ lesson.id }}')">
-                    <h4>
-                        📖 {{ lesson.title }}
-                        {% if lesson.quiz and lesson.quiz.id in completed_quizzes %}
-                            <span style="color: #28a745; margin-right: 10px; font-size: 1.2rem;">✅</span>
-                        {% endif %}
+                    <h4>📖 {{ lesson.title }} 
+                    {% if lesson.quiz and lesson.quiz.id in completed_quizzes %} <span style="color: #28a745;">✅</span> {% endif %}
                     </h4>
-                    <span id="icon-lesson-{{ lesson.id }}" style="font-weight: bold; color: #666;">▼ عرض المحتوى</span>
+                    <span id="icon-lesson-{{ lesson.id }}">▼ عرض</span>
                 </div>
 
-                <div id="lesson-{{ lesson.id }}" style="display: none; padding: 20px; background: transparent; border-top: 1px solid #eee;">
+                <div id="lesson-{{ lesson.id }}" style="display: none; padding: 20px; border-top: 1px solid #eee;">
                     {% if lesson.video_url %}
                         <div class="video-container">
                             <iframe src="{{ lesson.video_url }}?rel=0" frameborder="0" allowfullscreen></iframe>
                         </div>
                     {% endif %}
                     <div class="btn-group">
-                        {% if lesson.pdf_file %}<a href="{{ lesson.pdf_file.url }}" class="pdf-btn" target="_blank">📥 المذكرة (PDF)</a>{% endif %}
+                        {% if lesson.pdf_file %}<a href="{{ lesson.pdf_file.url }}" class="pdf-btn" target="_blank">📥 المذكرة</a>{% endif %}
                         {% if lesson.quiz %}<a href="{% url 'take_quiz' lesson.quiz.id %}" class="quiz-btn">📝 اختبار الدرس</a>{% endif %}
+                    </div>
+
+                    <!-- قسم التعليقات المحدث -->
+                    <div class="comments-section" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px; text-align: right;">
+                        <h5 style="color: var(--main-color);">💬 استفسارات الطلاب:</h5>
+                        <form method="post" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                            {% csrf_token %}
+                            <input type="hidden" name="lesson_id" value="{{ lesson.id }}">
+                            <input type="text" name="comment_text" placeholder="اكتب سؤالك هنا..." required style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ddd; font-family: 'Cairo';">
+                            <button type="submit" style="background: var(--main-color); color: white; border: none; padding: 0 20px; border-radius: 8px; cursor: pointer;">إرسال</button>
+                        </form>
+                        
+   <!-- عرض التعليقات (النسخة المتوافقة مع الوضع الليلي) -->
+<!-- عرض التعليقات -->
+{% for comment in lesson.comments.all %}
+    <!-- فصلنا تعريف الـ Div لتجنب تداخل الأكواد والخطأ البرمجي -->
+    {% if comment.user.is_superuser %}
+        <div class="comment-box" style="padding: 12px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid #e67e22; background: rgba(230, 126, 34, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <strong style="color: #e67e22; font-size: 0.9rem;">⭐ مستر رمضان إبراهيم</strong>
+    {% else %}
+        <div class="comment-box" style="padding: 12px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid #34a853; background: rgba(0, 0, 0, 0.05);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <strong style="color: var(--main-color); font-size: 0.9rem;">👤 {{ comment.user.username }}</strong>
+    {% endif %}
+
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <small style="color: #888; font-size: 0.7rem;">{{ comment.created_at|timesince }}</small>
+                    {% if user.is_superuser %}
+                        <form method="post" style="margin: 0;" onsubmit="return confirm('هل أنت متأكد من حذف التعليق؟');"> 
+                            {% csrf_token %}
+                            <input type="hidden" name="delete_comment_id" value="{{ comment.id }}">
+                            <button type="submit" style="background:none; border:none; color:red; cursor:pointer;">🗑️</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div> <!-- إغلاق الهيدر -->
+
+            <!-- نص التعليق: استخدمنا color: inherit ليظهر باللون الصحيح دائماً -->
+            <p style="margin: 5px 0 0; font-size: 0.95rem; color: inherit; text-align: right;">
+                {{ comment.text }}
+            </p>
+        </div> <!-- إغلاق الكارت -->
+{% empty %}
+    <p style="color: #bbb; text-align: center; padding: 10px;">لا توجد استفسارات بعد.</p>
+{% endfor %}
                     </div>
                 </div>
             </div>
         {% endfor %}
     {% else %}
-        <div style="text-align: center; background: #fff3cd; padding: 40px; border-radius: 15px; border: 1px dashed #856404;">
+        <div style="text-align: center; background: #fff3cd; padding: 40px; border-radius: 15px;">
             <h3>🔒 هذا القسم مغلق</h3>
             <p>تواصل مع مستر رمضان (01009690912) للتفعيل.</p>
             <form method="post" style="margin-top: 20px;">
                 {% csrf_token %}
-                <input type="text" name="activation_code" placeholder="أدخل كود التفعيل" required style="padding: 10px; border-radius: 8px; border: 1px solid #ccc;">
-                <button type="submit" style="background: var(--main-color); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-family: 'Cairo';">تفعيل الآن</button>
+                <input type="text" name="activation_code" placeholder="كود التفعيل" required style="padding: 10px; border-radius: 8px;">
+                <button type="submit" style="background: var(--main-color); color: #fff; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;">تفعيل</button>
             </form>
         </div>
     {% endif %}
@@ -116,32 +140,24 @@
         var icon = document.getElementById('icon-' + id);
         if (content.style.display === "none" || content.style.display === "") {
             content.style.display = "block";
-            icon.innerHTML = "▲ إخفاء المحتوى";
-            icon.style.color = "#d93025";
+            icon.innerHTML = "▲ إخفاء";
         } else {
             content.style.display = "none";
-            icon.innerHTML = "▼ عرض المحتوى";
-            icon.style.color = "#666";
+            icon.innerHTML = "▼ عرض";
         }
     }
 
     function toggleDarkMode() {
-        const body = document.body;
-        const btn = document.getElementById('darkModeBtn');
-        body.classList.toggle('dark-mode');
-        if (body.classList.contains('dark-mode')) {
-            localStorage.setItem('theme', 'dark');
-            btn.innerHTML = "☀️ الوضع النهاري";
-        } else {
-            localStorage.setItem('theme', 'light');
-            btn.innerHTML = "🌙 الوضع الليلي";
-        }
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        document.getElementById('darkModeBtn').innerHTML = isDark ? "☀️ النهاري" : "🌙 الليلي";
     }
 
     window.onload = function() {
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-mode');
-            document.getElementById('darkModeBtn').innerHTML = "☀️ الوضع النهاري";
+            document.getElementById('darkModeBtn').innerHTML = "☀️ النهاري";
         }
     }
 </script>
