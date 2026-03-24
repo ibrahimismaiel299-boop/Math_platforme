@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الإبداع في الرياضيات - مستر رمضان إبراهيم</title>
-    <!-- استدعاء خط Cairo بشكل صحيح -->
+    <title>منصة الإبداع - مستر رمضان إبراهيم</title>
     <link href="https://fonts.googleapis.com" rel="stylesheet">
     
     <style>
@@ -13,11 +12,10 @@
             --secondary-color: #34a853; 
             --accent-color: #e67e22; 
             --bg-color: #f8f9fa; 
-            --card-bg: #ffffff;
+            --card-bg: #78b5d8;
             --text-color: #2c3e50;
         }
 
-        /* الوضع الليلي */
         body.dark-mode {
             --bg-color: #1a202c;
             --card-bg: #2d3748;
@@ -29,115 +27,167 @@
             background-color: var(--bg-color); 
             color: var(--text-color);
             margin: 0; 
-            text-align: center; 
             transition: 0.3s;
+            scroll-behavior: smooth;
         }
 
         /* شريط المستخدم العلوي */
         .user-bar { 
-            background: var(--card-bg); 
+            background: var(--bg-color); 
             padding: 10px 5%; 
-            border-bottom: 4px solid var(--main-color); 
+            border-bottom: 3px solid var(--main-color); 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
             position: sticky; 
             top: 0; 
             z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .brand-info h1 { font-size: 1.6rem; font-weight: 900; color: var(--main-color); margin: 0; }
-        .brand-info span { color: var(--secondary-color); }
-        .brand-info p { font-size: 0.9rem; color: #666; margin: 0; font-weight: bold; }
+        .dark-mode .user-bar { background: var(--card-bg); }
+
+        /* قسم الدعاية (Hero Section) */
+        .hero {
+            background: linear-gradient(135deg, var(--main-color), #0d47a1);
+            color: white;
+            padding: 80px 5% 120px;
+            text-align: center;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0% 100%);
+        }
+
+        .hero h1 { font-size: 2.8rem; margin-bottom: 10px; }
+        .hero p { font-size: 1.3rem; margin-bottom: 30px; opacity: 0.9; }
         
-        .dark-mode .brand-info p { color: #a0aec0; }
-
-        /* الأزرار والقائمة اليمنى */
-        .nav-actions { display: flex; align-items: center; gap: 15px; }
-
-        .dark-mode-btn {
-            cursor: pointer;
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 2px solid var(--main-color);
-            background: transparent;
-            color: var(--main-color);
+        .cta-button {
+            background: var(--accent-color);
+            color: white;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-size: 1.1rem;
             font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
             transition: 0.3s;
-            font-family: 'Cairo';
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .dark-mode .dark-mode-btn { color: #fff; border-color: #fff; }
+        .cta-button:hover { transform: scale(1.05); background: #d35400; }
 
-        .container { margin-top: 50px; padding: 0 5%; }
-        
-        /* شبكة الكروت */
+        /* قسم التعريف بالمدرس */
+        .about-teacher {
+            padding: 60px 10%;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            text-align: right;
+        }
+        .about-info { flex: 1; min-width: 300px; }
+        .about-info h2 { color: var(--main-color); font-size: 2rem; margin-bottom: 20px; }
+        .about-info ul { list-style: none; padding: 0; }
+        .about-info li { margin-bottom: 15px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+
+        /* قسم الصفوف الدراسية (صفحتك الأصلية) */
+        .container { padding: 40px 5% 80px; text-align: center; }
         .grades { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
             gap: 25px; 
             margin-top: 40px; 
-            padding-bottom: 50px; 
         }
 
         .card { 
             background: var(--card-bg); 
             padding: 40px 20px; 
             border-radius: 20px; 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05); 
-            cursor: pointer; 
             transition: 0.4s; 
             border: 2px solid transparent; 
+            cursor: pointer;
         }
-        .card:hover { 
-            transform: translateY(-10px); 
-            border-color: var(--main-color); 
-            box-shadow: 0 15px 30px rgba(26,115,232,0.1); 
+        .card:hover { transform: translateY(-10px); border-color: var(--main-color); }
+        .card h3 { color: white; margin: 0; font-size: 1.5rem; }
+        
+        .dark-mode .card h3 { color: var(--text-color); }
+
+        .dark-mode-btn {
+            cursor: pointer; padding: 5px 12px; border-radius: 15px;
+            border: 2px solid var(--main-color); background: transparent;
+            color: var(--main-color); font-weight: bold; font-family: 'Cairo';
         }
-        .card h3 { color: var(--text-color); margin: 0; font-size: 1.5rem; }
-        
-        a { text-decoration: none; color: inherit; }
-        
+        .dark-mode .dark-mode-btn { color: #fff; border-color: #fff; }
+
         .logout-btn { 
             background: #fee2e2; color: #dc2626; border: none; 
-            padding: 8px 15px; border-radius: 8px; font-weight: bold; 
-            cursor: pointer; font-family: 'Cairo'; 
+            padding: 6px 12px; border-radius: 8px; font-weight: bold; 
+            cursor: pointer; font-family: 'Cairo'; font-size: 0.8rem;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            .about-teacher { text-align: center; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
+<!-- شريط المستخدم العلوي -->
 <div class="user-bar">
     <div class="brand-info">
-        <h1>✨ الإبداع <span>في الرياضيات</span></h1>
-        <p>مستر رمضان إبراهيم | 📞 01009690912</p>
+        <h1 style="font-size: 1.3rem; margin:0; color: var(--main-color);">✨ الإبداع <span>في الرياضيات</span></h1>
+        <p style="font-size: 0.8rem; margin:0; font-weight: bold; color: #666;">مستر رمضان إبراهيم | 01009690912</p>
     </div>
 
-    <div class="nav-actions">
-        <!-- زر تبديل الوضع الليلي -->
+    <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
         <button id="darkModeBtn" onclick="toggleDarkMode()" class="dark-mode-btn">🌙 الوضع الليلي</button>
 
         {% if user.is_authenticated %}
-            <div style="text-align: left;">
-                <span style="display: block; font-size: 0.8rem; color: #666;">مرحباً بك،</span>
-                <a href="{% url 'profile' %}" style="color: var(--main-color); font-weight: bold;">👤 {{ user.username }}</a>
+            <div style="text-align: left; line-height: 1.1;">
+                <span style="display: block; font-size: 0.7rem; color: #666;">مرحباً بك،</span>
+                <a href="{% url 'profile' %}" style="color: var(--main-color); font-weight: bold; font-size: 0.85rem;">👤 {{ user.username }}</a>
             </div>
             {% if user.is_superuser %}
-                <a href="/admin/" style="color: var(--secondary-color); font-weight: bold; border: 2px solid var(--secondary-color); padding: 5px 12px; border-radius: 8px; font-size: 0.8rem;">⚙️ الإدارة</a>
+                <a href="/admin/" style="color: var(--secondary-color); font-weight: bold; border: 2px solid var(--secondary-color); padding: 4px 10px; border-radius: 8px; font-size: 0.75rem;">⚙️ الإدارة</a>
             {% endif %}
             <form action="{% url 'logout' %}" method="post" style="margin: 0;">
                 {% csrf_token %}
                 <button type="submit" class="logout-btn">خروج</button>
             </form>
         {% else %}
-            <a href="{% url 'login' %}" style="color: var(--main-color); font-weight: bold; border: 2px solid var(--main-color); padding: 8px 20px; border-radius: 10px;">تسجيل دخول</a>
+            <a href="{% url 'login' %}" style="color: var(--main-color); font-weight: bold; border: 2px solid var(--main-color); padding: 6px 18px; border-radius: 10px; font-size: 0.9rem;">دخول</a>
         {% endif %}
     </div>
 </div>
 
-<div class="container">
-    <h1 style="font-size: 2.5rem;">ابدأ رحلة التفوق الآن 🚀</h1>
-    <p style="font-size: 1.2rem; opacity: 0.8;">اختر صفك الدراسي للوصول إلى أقوى الشروحات والاختبارات</p>
+<!-- قسم الدعاية -->
+<section class="hero">
+    <h1>رحلتك نحو الـ 100% تبدأ هنا 📐</h1>
+    <p>شرح مبسط، مراجعات قوية، ومتابعة لا تتوقف مع مستر رمضان إبراهيم</p>
+    <a href="#courses" class="cta-button">تصفح المناهج الدراسية 👇</a>
+</section>
+
+<!-- قسم التعريف بالمدرس -->
+<section class="about-teacher">
+    <div class="about-info">
+        <h2>عن مستر رمضان إبراهيم 👨‍🏫</h2>
+        <ul>
+            <li>💎 خبرة طويلة في تدريس الرياضيات للمرحلتين الإعدادية والثانوية.</li>
+            <li>💎 نعتمد على الفهم العميق وليس الحفظ المجرد.</li>
+            <li>💎 بنك أسئلة ضخم يغطي كافة أفكار الامتحانات.</li>
+            <li>💎 دعم فني وإجابة على استفسارات الطلاب أولاً بأول.</li>
+        </ul>
+        <p style="margin-top: 20px;"><b>تواصل معنا:</b> 📞 01009690912</p>
+    </div>
+    <div style="flex: 1; text-align: center;">
+        <div style="width: 200px; height: 200px; background: var(--card-bg); border-radius: 50%; display: inline-block; line-height: 200px; font-size: 4rem; border: 5px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">📐</div>
+    </div>
+</section>
+
+<!-- قسم الصفوف الدراسية (صفحتك الأصلية) -->
+<div class="container" id="courses">
+    <h2 style="font-size: 2.2rem; margin-bottom: 10px;">ابدأ رحلة التفوق الآن 🚀</h2>
+    <p style="font-size: 1.1rem; opacity: 0.8;">اختر صفك الدراسي للوصول إلى أقوى الشروحات والاختبارات</p>
     
     <div class="grades">
         <a href="{% url 'grade_categories' '1G' %}"><div class="card"><h3>الأول الإعدادي</h3></div></a>
@@ -153,7 +203,6 @@
     function toggleDarkMode() {
         const body = document.body;
         const btn = document.getElementById('darkModeBtn');
-        
         body.classList.toggle('dark-mode');
         
         if (body.classList.contains('dark-mode')) {
@@ -165,7 +214,6 @@
         }
     }
 
-    // تطبيق الثيم المحفوظ عند التحميل
     window.onload = function() {
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-mode');
